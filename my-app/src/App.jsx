@@ -3,11 +3,28 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './component/Login';
 import Register from './component/Register';
 import Home from './component/home';
+import Chat from './component/Chat';
 import './App.css';
+import Notifications from './component/Notification';
+function ProtectedRoute({ isLoggedIn, children }) {
+  return isLoggedIn ? children : <Navigate to="/login" />;
+}
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    // Optional: Check localStorage for persisted login state
+    return localStorage.getItem('isLoggedIn') === 'true';
+  });
+  const [username, setUsername] = useState(() => {
+    // Optional: Get username from localStorage if available
+    return localStorage.getItem('username') || '';
+  });
+
+  // Update localStorage when state changes
+  React.useEffect(() => {
+    localStorage.setItem('isLoggedIn', isLoggedIn);
+    localStorage.setItem('username', username);
+  }, [isLoggedIn, username]);
 
   return (
     <Router>
@@ -15,17 +32,34 @@ function App() {
         <Route path="/" element={
           isLoggedIn ? <Navigate to="/home" /> : <Navigate to="/login" />
         } />
+
         <Route path="/login" element={
-          isLoggedIn ? <Navigate to="/home" /> : 
-          <Login setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} />
+          isLoggedIn ? (
+            <Navigate to="/home" />
+          ) : (
+            <Login setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} />
+          )
         } />
+
         <Route path="/register" element={
-          isLoggedIn ? <Navigate to="/home" /> : <Register />
+          isLoggedIn ? (
+            <Navigate to="/home" />
+          ) : (
+            <Register />
+          )
         } />
+
         <Route path="/home" element={
-          isLoggedIn ? <Home username={username} setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/login" />
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <Home username={username} setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} />
+          </ProtectedRoute>
         } />
-      </Routes>
+
+       
+          <Route path="/" element={<Home />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/notifications" element={<Notifications />} />
+          </Routes>
     </Router>
   );
 }

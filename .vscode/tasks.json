@@ -6,12 +6,12 @@
         "type": "shell",
         "command": "g++",
         "args": [
-          "server.cpp",
-          "sqlite3.c",
-          "-o",
-          "server.exe",
-          "-lws2_32"
-        ],
+    "std=c++17",
+    "-g",
+    "server.cpp",
+    "-o",
+    "server.exe"
+],
         "group": {
           "kind": "build",
           "isDefault": true
@@ -21,4 +21,5 @@
       }
     ]
   }
+  
   

@@ -40,7 +40,6 @@ const Login = ({ setIsLoggedIn, setUsername }) => {
     setIsLoading(true);
 
     try {
-      // Format data to match server expectations
       const requestData = {
         username: formData.username.trim(),
         password: formData.password.trim()
@@ -57,23 +56,20 @@ const Login = ({ setIsLoggedIn, setUsername }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.error || 'Login failed');
       }
 
-      if (data.success) {
-        setIsLoggedIn(true);
-        setUsername(formData.username);
-        navigate('/home');
-      } else {
-        throw new Error(data.message || 'Invalid credentials');
-      }
+      // Successful login - no need to check data.success as the status code is 200
+      setIsLoggedIn(true);
+      setUsername(formData.username.trim());
+      navigate('/home');
     } catch (err) {
       setError(err.message || 'Failed to connect to server');
       console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   return (
     <div className="login-container">
